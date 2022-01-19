@@ -26,13 +26,34 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 // Create class named tft of type Adafruit_ST7735
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
+//Function Prototypes
+void Display_Menu(void);
+
 void setup() {
   // Use this initializer if using a 1.8" TFT screen:
-  tft.initR(INITR_GREENTAB);      // Init ST7735S chip, green tab
+  tft.initR(INITR_BLACKTAB);      // Init ST7735S chip, black tab
 
-  tft.fillScreen(ST77XX_BLACK);
+  // Display Welcome Screen
+  tft.setTextWrap(true);
+  tft.setRotation(3); // Rotate view 90 degrees
+  // Display_Menu();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+}
+
+void Display_Menu(void) {
+  tft.fillScreen(ST77XX_BLACK);
+  tft.setTextColor(ST77XX_BLUE);
+  tft.setTextSize(1);
+  tft.setCursor(26, 20);
+  tft.println("    LCD Gaming");
+  tft.setCursor(23, 29);
+  tft.println("   Select a Game");
+
+  tft.setCursor(0, 60);
+  tft.println("PONG");
+  tft.println("Etch-a-Sketch");
+  return;
 }
