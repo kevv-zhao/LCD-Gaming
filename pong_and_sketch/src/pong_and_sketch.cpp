@@ -48,7 +48,7 @@ void setup() {
 
   // Display Welcome Screen
   tft.setTextWrap(true);
-  tft.setRotation(3); // Rotate view 270 degrees
+  tft.setRotation(1); // Rotate view 270 degrees
 
   sketchPos[0] = tft.width()/2 - 2; sketchPos[1] = tft.height()/2 - 2;
   // Initialize ADC functionality
@@ -58,22 +58,20 @@ void setup() {
 }
 
 void loop() {
+  tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
+
   // Obtaining analog values and changing range to -512 to +512
   xVal = readAnalogInput(VRx) - 511;
-  yVal = -1*(readAnalogInput(VRy) - 512);
+  yVal = (readAnalogInput(VRy) - 512);
 
   // Print the adjusted analog values if they are outside of a noise range
-  if(xVal < -20 || xVal > 20) {
-    Serial.print("X-axis value = "); Serial.println(xVal);
+  if((xVal < -20 || xVal > 20) && (sketchPos[0] > 0 && sketchPos[0] < tft.width())) {
+    sketchPos[0] = sketchPos[0] + (xVal/abs(xVal))*2;
   }
-  if(yVal < -20 || yVal > 20) {
-    Serial.print("Y-axis value = "); Serial.println(yVal);
+  if((yVal < -20 || yVal > 20) && (sketchPos[1] > 0 && sketchPos[1] < tft.height())) {
+    sketchPos[1] = sketchPos[1] + (yVal/abs(yVal))*2;
   }
-
-  // tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
-  // sketchPos[0] = sketchPos[0] + 2;
-  // sketchPos[1] = sketchPos[1] + 2;
-  delay(1000);
+  delay(100);
 }
 
 void Display_Menu(void) {
