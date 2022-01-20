@@ -62,14 +62,15 @@ void loop() {
 
   // Obtaining analog values and changing range to -512 to +512
   xVal = readAnalogInput(VRx) - 511;
-  yVal = (readAnalogInput(VRy) - 512);
+  yVal = readAnalogInput(VRy) - 511;
 
-  // Print the adjusted analog values if they are outside of a noise range
-  if((xVal < -20 || xVal > 20) && (sketchPos[0] > 0 && sketchPos[0] < tft.width())) {
-    sketchPos[0] = sketchPos[0] + (xVal/abs(xVal))*2;
+
+  // Increment the cursor position based off the joystick position and draw a new square
+  if(xVal < -20 || xVal > 20) {
+    sketchPos[0] = sketchPos[0] + (xVal*3/511);
   }
-  if((yVal < -20 || yVal > 20) && (sketchPos[1] > 0 && sketchPos[1] < tft.height())) {
-    sketchPos[1] = sketchPos[1] + (yVal/abs(yVal))*2;
+  if(yVal < -20 || yVal > 20) {
+    sketchPos[1] = sketchPos[1] + (yVal*3/511);
   }
   delay(100);
 }
