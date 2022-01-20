@@ -37,7 +37,9 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 void Display_Menu(void);
 
 // Etch-a-Sketch Cursor Position
-int16_t sketchPos[2];
+int16_t brushPos[2];
+int16_t color[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
+ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
 
 void setup() {
   Serial.begin(9600);
@@ -50,7 +52,7 @@ void setup() {
   tft.setTextWrap(true);
   tft.setRotation(1); // Rotate view 270 degrees
 
-  sketchPos[0] = tft.width()/2 - 2; sketchPos[1] = tft.height()/2 - 2;
+  brushPos[0] = tft.width()/2 - 2; brushPos[1] = tft.height()/2 - 2;
   // Initialize ADC functionality
   adcInit();
 
@@ -58,19 +60,18 @@ void setup() {
 }
 
 void loop() {
-  tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
+  tft.fillRect(brushPos[0], brushPos[1], 4, 4, color[0]);
 
   // Obtaining analog values and changing range to -512 to +512
   xVal = readAnalogInput(VRx) - 511;
   yVal = readAnalogInput(VRy) - 511;
 
-
   // Increment the cursor position based off the joystick position and draw a new square
-  if(xVal < -20 || xVal > 20) {
-    sketchPos[0] = sketchPos[0] + (xVal*3/511);
+  if((brushPos[0]+(xVal*3/511) >= 0 && xVal < -20) || (brushPos[0]+(xVal*3/511) <= tft.width()-4 && xVal > 20)) {
+    brushPos[0] = brushPos[0] + (xVal*3/511);
   }
-  if(yVal < -20 || yVal > 20) {
-    sketchPos[1] = sketchPos[1] + (yVal*3/511);
+  if((brushPos[1]+(yVal*3/511) >= 0 && yVal < -20) || (brushPos[1]+(yVal*3/511) <= tft.height()-4 && yVal > 20)) {
+    brushPos[1] = brushPos[1] + (yVal*3/511);
   }
   delay(100);
 }
