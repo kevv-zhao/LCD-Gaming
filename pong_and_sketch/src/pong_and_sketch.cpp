@@ -26,6 +26,7 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 // Joystick Pins
 #define VRx   PIN0  //A0 pin
 #define VRy   PIN1  //A1 pin
+#define SW    PIN2  //Digital 2 pin
 
 int xVal;
 int yVal;
@@ -38,8 +39,9 @@ void Display_Menu(void);
 
 // Etch-a-Sketch Cursor Position and Color Pallet
 int16_t brushPos[2];
-uint16_t color[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
+uint16_t pallet[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
 ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
+int color = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -53,14 +55,21 @@ void setup() {
   tft.setRotation(1); // Rotate view 90 degrees
   // Initializing the brush position based off the current dimensions of the screen.
   brushPos[0] = tft.width()/2 - 2; brushPos[1] = tft.height()/2 - 2;
-  // Initialize ADC functionality
+
+  // Initialize ADC functionality and switch input
   adcInit();
+  DDRD &= ~(1 << SW);
+  PORTD |= (1 << SW);
 
   // Display_Menu();
 }
 
 void loop() {
-  tft.fillRect(brushPos[0], brushPos[1], 4, 4, color[0]);
+  // Change the brush color if the joystick switch is pressed
+  if(!(PIND & (1 << SW))) {
+    color = (color+1) % 9;
+  }
+  tft.fillRect(brushPos[0], brushPos[1], 4, 4, pallet[color]);
 
   // Obtaining analog values and changing range to -512 to +512
   xVal = readAnalogInput(VRx) - 511;
