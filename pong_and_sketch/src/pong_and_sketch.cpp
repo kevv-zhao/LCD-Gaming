@@ -18,29 +18,43 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <SPI.h>
 
-// These pins can be changed
+// LCD Pins
 #define TFT_CS    10
 #define TFT_RST   9 
 #define TFT_DC    8
+// Joystick Pins
+#define VRx   PIN0  //A0 pin
+#define VRy   PIN1  //A1 pin
 
 // Create class named tft of type Adafruit_ST7735
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-//Function Prototypes
+// Function Prototypes
 void Display_Menu(void);
 
+// Etch-a-Sketch Cursor Position
+int16_t sketchPos[2];
+
 void setup() {
+  Serial.begin(9600);
+
   // Use this initializer if using a 1.8" TFT screen:
   tft.initR(INITR_BLACKTAB);      // Init ST7735S chip, black tab
+  tft.fillScreen(ST77XX_BLACK);
 
   // Display Welcome Screen
   tft.setTextWrap(true);
-  tft.setRotation(3); // Rotate view 90 degrees
+  tft.setRotation(3); // Rotate view 270 degrees
+
+  sketchPos[0] = tft.width()/2 - 2; sketchPos[1] = tft.height()/2 - 2;
   // Display_Menu();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
+  sketchPos[0] = sketchPos[0] + 2;
+  sketchPos[1] = sketchPos[1] + 2;
+  delay(1000);
 }
 
 void Display_Menu(void) {
