@@ -36,7 +36,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 // Function Prototypes
 void Display_Menu(void);
 
-// Etch-a-Sketch Cursor Position
+// Etch-a-Sketch Cursor Position and Color Pallet
 int16_t brushPos[2];
 int16_t color[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
 ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
@@ -50,8 +50,8 @@ void setup() {
 
   // Display Welcome Screen
   tft.setTextWrap(true);
-  tft.setRotation(1); // Rotate view 270 degrees
-
+  tft.setRotation(1); // Rotate view 90 degrees
+  // Initializing the brush position based off the current dimensions of the screen.
   brushPos[0] = tft.width()/2 - 2; brushPos[1] = tft.height()/2 - 2;
   // Initialize ADC functionality
   adcInit();
