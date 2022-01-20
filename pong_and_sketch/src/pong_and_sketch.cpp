@@ -17,6 +17,7 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <SPI.h>
+#include "joystick_lib.h"
 
 // LCD Pins
 #define TFT_CS    10
@@ -25,6 +26,9 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 // Joystick Pins
 #define VRx   PIN0  //A0 pin
 #define VRy   PIN1  //A1 pin
+
+int xVal;
+int yVal;
 
 // Create class named tft of type Adafruit_ST7735
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
@@ -47,13 +51,28 @@ void setup() {
   tft.setRotation(3); // Rotate view 270 degrees
 
   sketchPos[0] = tft.width()/2 - 2; sketchPos[1] = tft.height()/2 - 2;
+  // Initialize ADC functionality
+  adcInit();
+
   // Display_Menu();
 }
 
 void loop() {
-  tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
-  sketchPos[0] = sketchPos[0] + 2;
-  sketchPos[1] = sketchPos[1] + 2;
+  // Obtaining analog values and changing range to -512 to +512
+  xVal = readAnalogInput(VRx) - 511;
+  yVal = -1*(readAnalogInput(VRy) - 512);
+
+  // Print the adjusted analog values if they are outside of a noise range
+  if(xVal < -20 || xVal > 20) {
+    Serial.print("X-axis value = "); Serial.println(xVal);
+  }
+  if(yVal < -20 || yVal > 20) {
+    Serial.print("Y-axis value = "); Serial.println(yVal);
+  }
+
+  // tft.fillRect(sketchPos[0], sketchPos[1], 4, 4, ST7735_BLUE);
+  // sketchPos[0] = sketchPos[0] + 2;
+  // sketchPos[1] = sketchPos[1] + 2;
   delay(1000);
 }
 
