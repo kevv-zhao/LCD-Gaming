@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 Name:   Kevin Zhao
 Date:   2022, January 19
-File:   etch_a_sketch.h
+File:   joystick_lib.h
 
 Purp: 
 
@@ -17,6 +17,11 @@ void adcInit(void) {
   ADCSRA |= (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Enable ADC with 128 prescalar
 }
 
-void etchSketch(void) {
-
+uint16_t readAnalogInput (uint8_t analogPin) {
+  uint16_t ADCvalue;
+  ADMUX = (ADMUX & 0xF0) | analogPin; // Clears bottom 4 bits and sets mux for appropriate input pin
+  ADCSRA |= (1 << ADSC); // Writing '1' to ADC Start Conversion bit in ADC Control and Status Register A
+  while(ADCSRA & (1 << ADSC)); // While no ADSC == 1 (i.e ADC conversion no complete)
+  ADCvalue = ADC; // Read ADC value and return
+  return ADCvalue;
 }
