@@ -38,7 +38,7 @@ void Display_Menu(void);
 
 // Etch-a-Sketch Cursor Position and Color Pallet
 int16_t brushPos[2];
-int16_t color[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
+uint16_t color[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
 ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
 
 void setup() {
