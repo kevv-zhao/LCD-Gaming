@@ -39,6 +39,7 @@ void Display_Menu(void);
 
 // Etch-a-Sketch Cursor Position and Color Pallet
 int16_t brushPos[2];
+int16_t brushPrev[2];
 uint16_t pallet[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
 ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
 int color = 0;
@@ -55,7 +56,9 @@ void setup() {
   tft.setRotation(1); // Rotate view 90 degrees
   // Initializing the brush position based off the current dimensions of the screen.
   brushPos[0] = tft.width()/2 - 2; brushPos[1] = tft.height()/2 - 2;
-  tft.fillRect(brushPos[0], brushPos[1], 4, 4, pallet[color]);
+  brushPrev[0] = brushPos[0]; brushPrev[1] = brushPos[1];
+  tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_BLACK);
+  tft.fillRect(brushPos[0], brushPos[1], 3, 3, pallet[color]);
 
   // Initialize ADC functionality and switch input
   adcInit();
@@ -69,11 +72,12 @@ void loop() {
   // Change the brush color if the joystick switch is pressed
   if(!(PIND & (1 << SW))) {
     color = (color+1) % 9;
-    if(color == 8) {
-      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_WHITE);
-      tft.fillRect(brushPos[0], brushPos[1], 3, 3, ST77XX_BLACK);
+    if(color != 8) {
+      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_BLACK);
+      tft.fillRect(brushPos[0], brushPos[1], 3, 3, pallet[color]);
     } else {
-      tft.fillRect(brushPos[0], brushPos[1], 4, 4, pallet[color]);
+      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_WHITE);
+      tft.fillRect(brushPos[0], brushPos[1], 3, 3, pallet[color]);
     }
   }
   // Obtaining analog values and changing range to -512 to +512
@@ -81,22 +85,23 @@ void loop() {
   yVal = readAnalogInput(VRy) - 511;
 
   // Increment the cursor position based off the joystick position and draw a new square
-  if((brushPos[0]+(xVal*3/511) >= 0 && xVal < -20) || (brushPos[0]+(xVal*3/511) <= tft.width()-4 && xVal > 20)) {
-    if(color == 8) tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST77XX_BLACK);
+  brushPrev[0] = brushPos[0]; brushPrev[1] = brushPos[1];
+  if((brushPos[0] > 0 && xVal < -20) || (brushPos[0] <= tft.width()-4 && xVal > 20)) {
     brushPos[0] = brushPos[0] + (xVal*3/511);
   }
-  if((brushPos[1]+(yVal*3/511) >= 0 && yVal < -20) || (brushPos[1]+(yVal*3/511) <= tft.height()-4 && yVal > 20)) {
-    if(color == 8) tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST77XX_BLACK);
+  if((brushPos[1] >= 0 && yVal < -20) || (brushPos[1] <= tft.height()-4 && yVal > 20)) {
     brushPos[1] = brushPos[1] + (yVal*3/511);
   }
 
   // Draw a square in the current brush position only if the joystick has changed the brush position
   if(xVal < -20 || xVal > 20 || yVal < -20 || yVal > 20) {
-    if(color == 8) {
-      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_WHITE);
-      tft.fillRect(brushPos[0], brushPos[1], 3, 3, ST77XX_BLACK);
+    tft.fillRect(brushPrev[0], brushPrev[1], 4, 4, pallet[color]);
+    if(color != 8) {
+      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_BLACK);
+      tft.fillRect(brushPos[0], brushPos[1], 3, 3, pallet[color]);
     } else {
-      tft.fillRect(brushPos[0], brushPos[1], 4, 4, pallet[color]);
+      tft.fillRect(brushPos[0], brushPos[1], 4, 4, ST7735_WHITE);
+      tft.fillRect(brushPos[0], brushPos[1], 3, 3, pallet[color]);
     }
   }
 
