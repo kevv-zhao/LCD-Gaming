@@ -54,25 +54,15 @@ void setup() {
   tft.setTextWrap(true);
   tft.setRotation(1); // Rotate view 90 degrees
   // Display_Menu();
-
-  brushInit(tft);
 }
 
 void loop() {
-  // Change the brush color if the joystick switch is pressed
-  if(!(PIND & (1 << SW))) {
-    colorChange(tft);
-  }
-  
   // Obtaining analog values and changing range to -512 to +512
   xVal = readAnalogInput(VRx) - 511;
   yVal = readAnalogInput(VRy) - 511;
-  brushMove(tft, xVal, yVal);
 
-  // Draw a square in the current brush position only if the joystick has changed the brush position
-  if(xVal < -20 || xVal > 20 || yVal < -20 || yVal > 20) {
-    sketch(tft);
-  }
+  
+
   delay(100);
 }
 
