@@ -11,6 +11,7 @@ Doc:
 // Etch-a-Sketch Cursor Position and Color Pallet
 int16_t brushPos[2];
 int16_t brushPrev[2];
+int8_t brushSpeed = 3;
 uint16_t pallet[] = {ST77XX_RED, ST77XX_ORANGE, ST77XX_YELLOW, ST77XX_GREEN, 
 ST7735_CYAN, ST7735_BLUE, ST7735_MAGENTA, ST7735_WHITE, ST77XX_BLACK};
 int color = 0;
@@ -45,10 +46,10 @@ void brushInit(Adafruit_ST7735 tft) {
 void brushMove(Adafruit_ST7735 tft, int xVal, int yVal) {
     brushPrev[0] = brushPos[0]; brushPrev[1] = brushPos[1];
     if((brushPos[0] > 0 && xVal < -20) || (brushPos[0] <= tft.width()-4 && xVal > 20)) {
-        brushPos[0] = brushPos[0] + (xVal*3/511);
+        brushPos[0] = brushPos[0] + (xVal*brushSpeed/511);
     }
     if((brushPos[1] >= 0 && yVal < -20) || (brushPos[1] <= tft.height()-4 && yVal > 20)) {
-        brushPos[1] = brushPos[1] + (yVal*3/511);
+        brushPos[1] = brushPos[1] + (yVal*brushSpeed/511);
     }
 }
 
