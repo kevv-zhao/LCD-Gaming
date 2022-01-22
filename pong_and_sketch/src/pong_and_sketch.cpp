@@ -83,10 +83,13 @@ void loop() {
   if(ballPos[0] > tft.width()-4) {
     // This will be the condition for the second player to score a point
     trajRand[0] = -trajRand[0]; // CHANGE TO SCORING A POINT AND REPAWNING THE BALL
+
   } else if(ballPos[1] > tft.height()-4 || ballPos[1] < 4) {
     // Bounces the ball off the horizontal walls
     trajRand[1] = -trajRand[1];
-  } else if(ballPos[0] > 4+4 && ballPos[0] < 8+4 && paddlePos[0]+4 <= ballPos[1] && paddlePos[0]+24+4 >= ballPos[1]) {
+    
+  } else if(ballPos[0] > paddleWidth+4 && ballPos[0] < paddleWidth+4 && 
+  paddlePos[0]+4 <= ballPos[1] && paddlePos[0]+paddleLength+4 >= ballPos[1]) {
     // Bounces the ball off the paddle
     trajRand[0] = -trajRand[0];
   }
