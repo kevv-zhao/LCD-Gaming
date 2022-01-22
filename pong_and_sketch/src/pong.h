@@ -15,7 +15,7 @@ int8_t paddleLength = 24;
 
 int16_t ballPos[2]; // {X,Y} position of the ball
 int ballSpeeds[2];  // {X,Y} speeds of the ball
-int ballSpdMax = 4;
+int ballSpdMax = 7;
 
 void paddleInit(Adafruit_ST7735 tft) {
     // Paddle Setup
@@ -26,8 +26,8 @@ void paddleInit(Adafruit_ST7735 tft) {
 void ballInit(Adafruit_ST7735 tft) {
   ballPos[0] = tft.width()/2; ballPos[1] = tft.height()/2;
   tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
-  ballSpeeds[0] = random(-ballSpdMax,ballSpdMax);
-  ballSpeeds[1] = random(-ballSpdMax,ballSpdMax);
+  ballSpeeds[0] = random(2,ballSpdMax);
+  ballSpeeds[1] = random(1,ballSpdMax);
 }
 
 void paddleMove(Adafruit_ST7735 tft, int xVal, int yVal) {
@@ -59,21 +59,30 @@ void ballMove(Adafruit_ST7735 tft) {
     tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
 }
 
-void ballCheck(Adafruit_ST7735 tft) {
+void ballCheck(Adafruit_ST7735 tft, int yVal) {
     // Checking on the conddition of the ball for bouncing or scoring a point
     if(ballPos[0] > tft.width()-4) {
         // This will be the condition for the  player to score a point
         ballSpeeds[0] = -ballSpeeds[0]; // CHANGE TO SCORING A POINT AND REPAWNING THE BALL
 
-    } else if(ballPos[1] > tft.height()-4 || ballPos[1] < 4) {
-        // Bounces the ball off the horizontal walls
-        ballSpeeds[1] = -ballSpeeds[1];
+    } else if (ballPos[0] < 0) {
+        // Respawns the ball if it goes past the paddle
+        delay(500);
+        tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_BLACK);
+        ballInit(tft);
+
+    } else if(ballPos[1] < 4) {
+        // Bounces the ball off the top of the screen
+        ballSpeeds[1] = abs(ballSpeeds[1]);
+
+    } else if(ballPos[1] > tft.height()-4) {
+        // Bounces the ball off the bottome of the screen
+        ballSpeeds[1] = -abs(ballSpeeds[1]);
 
     } else if(ballPos[0] > paddleWidth+4 && ballPos[0] < paddleWidth+4+4 && 
     paddlePos[0]-4 <= ballPos[1] && paddlePos[0]+paddleLength+4 >= ballPos[1]) {
         // Bounces the ball off the paddle
         ballSpeeds[0] = random(2, ballSpdMax);
-        ballSpeeds[1] = random(1,ballSpdMax) * ballSpeeds[1]/random(1,ballSpdMax) + 1/random(1,ballSpdMax);
-        // **MAKE THE TRAJECTORY CHANGE ACCORDING TO HOW THE PADDLE IS MOVING RIGHT BEFORE A BOUNCE**
+        ballSpeeds[1] = ballSpeeds[1] + yVal*ballSpdMax/511;
     }
 }
