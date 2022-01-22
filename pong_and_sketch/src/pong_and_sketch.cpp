@@ -32,9 +32,6 @@ Doc:  Used seesaw_shield18_test.ino to get initialization values,
 
 int xVal;
 int yVal;
-int16_t ballPos[2]; // Ball's {X,Y} position
-int trajRand[2];
-int randMax = 4;
 
 // Create class named tft of type Adafruit_ST7735
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
@@ -60,11 +57,7 @@ void setup() {
   // Display_Menu();
 
   paddleInit(tft);
-
-  ballPos[0] = tft.width()/2; ballPos[1] = tft.height()/2;
-  tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
-  trajRand[0] = random(-randMax,randMax);
-  trajRand[1] = random(-randMax,randMax);
+  ballInit(tft);
 }
 
 void loop() {
@@ -73,29 +66,9 @@ void loop() {
   yVal = readAnalogInput(VRy) - 511;
 
   paddleMove(tft, xVal, yVal);
+  ballMove(tft);
 
-  // Moving the ball
-  tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_BLACK);
-  ballPos[0] = ballPos[0] + trajRand[0];
-  ballPos[1] = ballPos[1] + trajRand[1];
-  tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
-
-  // Checking on the conddition of the ball for bouncing or scoring a point
-  if(ballPos[0] > tft.width()-4) {
-    // This will be the condition for the  player to score a point
-    trajRand[0] = -trajRand[0]; // CHANGE TO SCORING A POINT AND REPAWNING THE BALL
-
-  } else if(ballPos[1] > tft.height()-4 || ballPos[1] < 4) {
-    // Bounces the ball off the horizontal walls
-    trajRand[1] = -trajRand[1];
-
-  } else if(ballPos[0] > paddleWidth+4 && ballPos[0] < paddleWidth+4+4 && 
-  paddlePos[0]-4 <= ballPos[1] && paddlePos[0]+paddleLength+4 >= ballPos[1]) {
-    // Bounces the ball off the paddle
-    trajRand[0] = random(2, randMax);
-    trajRand[1] = random(1,randMax) * trajRand[1]/random(1,randMax) + 1/random(1,randMax);
-    // **MAKE THE TRAJECTORY CHANGE ACCORDING TO HOW THE PADDLE IS MOVING RIGHT BEFORE A BOUNCE**
-  }
+  ballCheck(tft);
   
   delay(50);
 }
