@@ -34,6 +34,7 @@ int xVal;
 int yVal;
 int16_t ballPos[2];
 int trajRand[2];
+int randMax = 2;
 
 // Create class named tft of type Adafruit_ST7735
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
@@ -61,8 +62,8 @@ void setup() {
   paddleInit(tft);
   ballPos[0] = tft.width()/2; ballPos[1] = tft.height()/2;
   tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
-  trajRand[0] = 3;
-  trajRand[1] = 3;
+  trajRand[0] = random(-randMax,randMax);
+  trajRand[1] = random(-randMax,randMax);
 }
 
 void loop() {
@@ -70,8 +71,8 @@ void loop() {
   xVal = readAnalogInput(VRx) - 511;
   yVal = readAnalogInput(VRy) - 511;
 
-  // paddleMove(tft, xVal, yVal);
-  // tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_BLACK);
+  paddleMove(tft, xVal, yVal);
+  tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_BLACK);
   ballPos[0] = ballPos[0] + trajRand[0];
   ballPos[1] = ballPos[1] + trajRand[1];
   tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
