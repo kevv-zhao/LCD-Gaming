@@ -19,9 +19,9 @@ void paddleInit(Adafruit_ST7735 tft) {
 
 void paddleMove(Adafruit_ST7735 tft, int xVal, int yVal) {
     // Paddle movement
-    // Edge cases for when the paddle nears the edge of the screen
     if((paddlePos[0] + (yVal*paddleSpeed/511) < 0 && yVal < -20) || 
     (paddlePos[0] + (yVal*paddleSpeed/511) > tft.height()-24 && yVal > 20)) {
+        // Edge cases for when the paddle nears the edge of the screen and is stopped
         tft.fillRect(4, paddlePos[0], 4, 24, ST7735_BLACK);
         if(yVal*paddleSpeed/511 < 0) {
         paddlePos[0] = 0;
@@ -30,8 +30,8 @@ void paddleMove(Adafruit_ST7735 tft, int xVal, int yVal) {
         }
         tft.fillRect(4, paddlePos[0], 4, 24, ST7735_WHITE);
 
-        // General paddle movement, non-edge cases
     } else if((paddlePos[0] >= 0 && yVal < -20) || (paddlePos[0] <= tft.height()-24 && yVal > 20)) {
+        // General paddle movement, non-edge cases
         tft.fillRect(4, paddlePos[0], 4, 24, ST7735_BLACK);
         paddlePos[0] = paddlePos[0] + (yVal*paddleSpeed/511);
         tft.fillRect(4, paddlePos[0], 4, 24, ST7735_WHITE);
