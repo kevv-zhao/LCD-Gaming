@@ -68,7 +68,7 @@ void loop() {
   paddleMove(tft, xVal, yVal);
   ballMove(tft);
 
-  ballCheck(tft);
+  ballCheck(tft, yVal);
   
   delay(50);
 }
