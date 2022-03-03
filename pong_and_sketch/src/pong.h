@@ -15,7 +15,8 @@ int8_t paddleLength = 24;
 
 int16_t ballPos[2]; // {X,Y} position of the ball
 int ballSpeeds[2];  // {X,Y} speeds of the ball
-int ballSpdMax = 7;
+int8_t ballRadius = 3;
+int ballSpdMax = 6;
 
 void paddleInit(Adafruit_ST7735 tft) {
     // Paddle Setup
@@ -25,7 +26,7 @@ void paddleInit(Adafruit_ST7735 tft) {
 
 void ballInit(Adafruit_ST7735 tft) {
   ballPos[0] = tft.width()/2; ballPos[1] = tft.height()/2;
-  tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_WHITE);
+  tft.fillCircle(ballPos[0], ballPos[1], ballRadius, ST7735_WHITE);
   ballSpeeds[0] = random(2,ballSpdMax);
   ballSpeeds[1] = random(1,ballSpdMax);
 }
@@ -70,6 +71,7 @@ void ballCheck(Adafruit_ST7735 tft, int yVal) {
         delay(500);
         tft.fillCircle(ballPos[0], ballPos[1], 3, ST7735_BLACK);
         ballInit(tft);
+        delay(500);
 
     } else if(ballPos[1] < 4) {
         // Bounces the ball off the top of the screen
@@ -79,10 +81,18 @@ void ballCheck(Adafruit_ST7735 tft, int yVal) {
         // Bounces the ball off the bottome of the screen
         ballSpeeds[1] = -abs(ballSpeeds[1]);
 
-    } else if(ballPos[0] > paddleWidth+4 && ballPos[0] < paddleWidth+4+4 && 
-    paddlePos[0]-4 <= ballPos[1] && paddlePos[0]+paddleLength+4 >= ballPos[1]) {
+    } else if(ballPos[0] > paddleWidth+ballRadius && ballPos[0] < paddleWidth+ballRadius+4 && 
+    paddlePos[0]-ballRadius <= ballPos[1] && paddlePos[0]+paddleLength+ballRadius >= ballPos[1]) {
         // Bounces the ball off the paddle
-        ballSpeeds[0] = random(2, ballSpdMax);
-        ballSpeeds[1] = ballSpeeds[1] + yVal*ballSpdMax/511;
+        if(ballSpeeds[0]-1 < 1) {
+            ballSpeeds[0] = random(1, ballSpeeds[0]+2);
+        } else if (ballSpeeds[0]+2 > ballSpdMax) {
+            ballSpeeds[0] = random(ballSpeeds[0]-1, ballSpdMax);
+        } else {
+            ballSpeeds[0] = random(ballSpeeds[0]-1, ballSpeeds[0]+2);
+        }
+        
+        ballSpeeds[1] = ballSpeeds[1]/abs(ballSpeeds[1])*random(0,ballSpdMax) + yVal*ballSpdMax/511;
     }
+    tft.fillRect(4, paddlePos[0], paddleWidth, paddleLength, ST7735_WHITE);
 }
